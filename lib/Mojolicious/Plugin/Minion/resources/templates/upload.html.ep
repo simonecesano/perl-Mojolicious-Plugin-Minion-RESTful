@@ -1,0 +1,40 @@
+<style>
+  #drop {
+  height: 12em;
+  width:100%;
+  background-color: #f0f0f0;
+  }
+</style>
+<div id="drop">drop file here to <%= stash('task') %></div>
+<script>
+$(function(){
+    var d = document.getElementById('drop');
+    console.log(d);
+
+    function preventDefault (e){
+	e.preventDefault();
+	e.stopPropagation();
+    };
+
+    ;['dragenter', 'dragover', 'dragleave', 'drop'].forEach(n => {
+	d.addEventListener(n, preventDefault, false);
+	document.body.addEventListener(n, preventDefault, false)
+    })
+
+    function handleDrop(e) {
+	let dt = e.dataTransfer
+	let files = dt.files
+	var oReq = new XMLHttpRequest();
+	oReq.open("POST", "<%= url_for('/do/') %><%= stash('task') %>", true);
+	
+	oReq.onload = function (oEvent) {
+	    console.log('done');
+	    var r = JSON.parse(this.response);
+	    window.location.href = "<%= url_for('/status/') %>" + r.id + '/view';
+	};
+	oReq.send(files[0]);
+    }
+    
+    d.addEventListener('drop', handleDrop, false)
+})
+</script>

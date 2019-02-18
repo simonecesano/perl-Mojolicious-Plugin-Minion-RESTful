@@ -1,0 +1,19 @@
+% layout 'default';
+<script>
+$(function(){
+    $('#result').toggle();
+    var checkResult = function(){
+	$.get("<%= url_for('/status/') %><%= stash('nr') =%>", function(d){
+	    $('#state').html(d.state);
+	    if (d.state == "finished") {
+		clearInterval(intervalID);
+		$('#result').toggle();
+	    }
+	})
+    };
+    var intervalID = window.setInterval(checkResult, 5000);
+    checkResult()
+})
+</script>
+<div id="state"></div>
+<div id="result"><a href="<%= url_for('/status/') %><%= stash('nr') =%>/result">download result</a></div>
